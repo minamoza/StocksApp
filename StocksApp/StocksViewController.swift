@@ -12,8 +12,8 @@ final class StocksViewController: UIViewController {
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.backgroundColor = .brown
         tableView.separatorStyle = .none
+        tableView.backgroundColor = .white
         tableView.register(StockCell.self, forCellReuseIdentifier: StockCell.typeName)
         return tableView
     }()
@@ -21,10 +21,11 @@ final class StocksViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        
+        view.backgroundColor = .white
         setupSubviews()
         
         tableView.dataSource = self
+        tableView.delegate = self
     }
     
     private func setupSubviews(){
@@ -38,16 +39,34 @@ final class StocksViewController: UIViewController {
 
 }
 
-extension StocksViewController: UITableViewDataSource{
+extension StocksViewController: UITableViewDataSource, UITableViewDelegate{
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 10
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        let view = UIView()
+        view.backgroundColor = .white
+        return view
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 8
+    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: StockCell.typeName, for: indexPath) as! StockCell
         
+        if indexPath.section % 2 == 0{
+            cell.backgroundColor = UIColor(red: 240/255, green: 244/255, blue: 247/255, alpha: 1)
+            cell.layer.cornerRadius = 16
+        }
+            
         return cell
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
     }
     
     

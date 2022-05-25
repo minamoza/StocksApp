@@ -20,25 +20,43 @@ final class StockCell: UITableViewCell {
         return image
     }()
     
-    private lazy var symbolLabel: UILabel = {
+    private lazy var price: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "YNDX"
+        label.text = "4 764,6 ₽"
         label.font = .systemFont(ofSize: 18)
+        label.font = .boldSystemFont(ofSize: 18)
         return label
     }()
     
+    private lazy var delta: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "+55 ₽ (1,15%)"
+        label.textColor = UIColor(red: 36/255, green: 178/255, blue: 93/255, alpha: 1)
+        label.font = .systemFont(ofSize: 12)
+        label.font = .boldSystemFont(ofSize: 12)
+        return label
+    }()
+    
+    private lazy var view = StockView(frame: CGRect(x: 0, y: 0, width: contentView.frame.width/2, height: 40))
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init (style: style, reuseIdentifier: reuseIdentifier)
+
+        view.translatesAutoresizingMaskIntoConstraints = false
         setupViews()
     }
-    
+
     required init? (coder: NSCoder){
         fatalError("init(coder:) has not been implemented")
     }
+    
     private func setupViews(){
         contentView.addSubview(iconView)
-        contentView.addSubview(symbolLabel)
+        contentView.addSubview(view)
+        contentView.addSubview(price)
+        contentView.addSubview(delta)
         
         setupConstraints()
     }
@@ -50,7 +68,13 @@ final class StockCell: UITableViewCell {
         iconView.heightAnchor.constraint(equalToConstant: 52).isActive = true
         iconView.widthAnchor.constraint(equalToConstant: 52).isActive = true
         
-        symbolLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 12).isActive = true
-        symbolLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 14).isActive = true
+        view.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 12).isActive = true
+        view.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 14).isActive = true
+        
+        price.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -17).isActive = true
+        price.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 14).isActive = true
+        
+        delta.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -17).isActive = true
+        delta.bottomAnchor.constraint(equalTo: price.bottomAnchor, constant: 14).isActive = true
     }
 }
