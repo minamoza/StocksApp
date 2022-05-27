@@ -35,17 +35,20 @@ class StockView: UIView {
         return btn
     }()
     
-    private var tapped = false
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        self.translatesAutoresizingMaskIntoConstraints = false
         setupViews()
     }
 
     //initWithCode to init view from xib or storyboard
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+    }
+    
+    func configureView(stock: Stock){
+        symbolLabel.text = stock.symbol
+        subLabel.text = stock.name
     }
     
     private func setupViews(){
@@ -68,8 +71,7 @@ class StockView: UIView {
     }
     
     @objc func btnTapped(){
-        tapped = !tapped
-        if tapped {
+        if button.isSelected {
             button.setImage(UIImage(named: "star.colored"), for: .normal)
         } else {
             button.setImage(UIImage(named: "star"), for: .normal)

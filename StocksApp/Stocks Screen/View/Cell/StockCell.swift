@@ -20,7 +20,7 @@ final class StockCell: UITableViewCell {
         return image
     }()
     
-    private lazy var price: UILabel = {
+    private lazy var priceLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "4 764,6 ₽"
@@ -29,7 +29,7 @@ final class StockCell: UITableViewCell {
         return label
     }()
     
-    private lazy var delta: UILabel = {
+    private lazy var deltaLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "+55 ₽ (1,15%)"
@@ -39,12 +39,11 @@ final class StockCell: UITableViewCell {
         return label
     }()
     
-    private lazy var view = StockView(frame: CGRect(x: 0, y: 0, width: contentView.frame.width/2, height: 40))
+    private lazy var view = StockView(frame: CGRect(x: 0, y: 0, width: contentView.frame.width/2, height: contentView.frame.height - 4))
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init (style: style, reuseIdentifier: reuseIdentifier)
 
-        view.translatesAutoresizingMaskIntoConstraints = false
         setupViews()
     }
 
@@ -52,11 +51,17 @@ final class StockCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func configure(stock: Stock){
+        priceLabel.text = String(stock.price)
+        deltaLabel.text = String(stock.change)
+        view.configureView(stock: stock)
+    }
+    
     private func setupViews(){
         contentView.addSubview(iconView)
         contentView.addSubview(view)
-        contentView.addSubview(price)
-        contentView.addSubview(delta)
+        contentView.addSubview(priceLabel)
+        contentView.addSubview(deltaLabel)
         
         setupConstraints()
     }
@@ -71,10 +76,10 @@ final class StockCell: UITableViewCell {
         view.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 12).isActive = true
         view.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 14).isActive = true
         
-        price.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -17).isActive = true
-        price.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 14).isActive = true
+        priceLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -17).isActive = true
+        priceLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 14).isActive = true
         
-        delta.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -17).isActive = true
-        delta.bottomAnchor.constraint(equalTo: price.bottomAnchor, constant: 14).isActive = true
+        deltaLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -17).isActive = true
+        deltaLabel.bottomAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 14).isActive = true
     }
 }
