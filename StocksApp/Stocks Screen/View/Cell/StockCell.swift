@@ -16,14 +16,12 @@ final class StockCell: UITableViewCell {
         image.translatesAutoresizingMaskIntoConstraints = false
         image.layer.cornerRadius = 12
         image.clipsToBounds = true
-        image.image = UIImage(named: "YNDX")
         return image
     }()
     
     private lazy var priceLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "4 764,6 ₽"
         label.font = .systemFont(ofSize: 18)
         label.font = .boldSystemFont(ofSize: 18)
         return label
@@ -32,7 +30,6 @@ final class StockCell: UITableViewCell {
     private lazy var deltaLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "+55 ₽ (1,15%)"
         label.textColor = UIColor(red: 36/255, green: 178/255, blue: 93/255, alpha: 1)
         label.font = .systemFont(ofSize: 12)
         label.font = .boldSystemFont(ofSize: 12)
@@ -51,9 +48,16 @@ final class StockCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(stock: Stock){
-        priceLabel.text = String(stock.price)
-        deltaLabel.text = String(stock.change)
+    func configure(stock: StockModelProtocol){
+    
+        priceLabel.text = stock.price
+        deltaLabel.text = stock.change
+        
+        if let imageURL = URL(string: stock.iconURL){
+           iconView.load(url: imageURL)
+       }
+        
+//      дальше передаем данные чтобы взять stock.name и stock.symbol
         view.configureView(stock: stock)
     }
     
@@ -83,3 +87,6 @@ final class StockCell: UITableViewCell {
         deltaLabel.bottomAnchor.constraint(equalTo: priceLabel.bottomAnchor, constant: 14).isActive = true
     }
 }
+
+
+

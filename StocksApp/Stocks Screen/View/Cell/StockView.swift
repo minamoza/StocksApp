@@ -46,7 +46,7 @@ class StockView: UIView {
         super.init(coder: aDecoder)
     }
     
-    func configureView(stock: Stock){
+    func configureView(stock: StockModelProtocol){
         symbolLabel.text = stock.symbol
         subLabel.text = stock.name
     }
