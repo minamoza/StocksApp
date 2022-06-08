@@ -7,15 +7,27 @@
 
 import UIKit
 
-final class StocksViewController: UIViewController {
+final class StocksViewController: UIViewController{
     
-    private var stocks: [Stock] = []
+    private let presenter: StocksPresenterProtocol
+        
+    init(presenter: StocksPresenterProtocol) {
+        self.presenter = presenter
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.separatorStyle = .none
         tableView.backgroundColor = .white
+        tableView.dataSource = self
+        tableView.delegate = self
         tableView.register(StockCell.self, forCellReuseIdentifier: StockCell.typeName)
         return tableView
     }()
@@ -24,12 +36,15 @@ final class StocksViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         view.backgroundColor = .white
-        setupSubviews()
-        getStocks()
         
-        tableView.dataSource = self
-        tableView.delegate = self
+        setupSubviews()
+        presenter.loadView()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+       navigationController?.navigationBar.barStyle = UIBarStyle.default
+       navigationController?.navigationBar.tintColor = UIColor.black
+   }
     
     private func setupSubviews(){
         view.addSubview(tableView)
@@ -39,45 +54,25 @@ final class StocksViewController: UIViewController {
         tableView.bottomAnchor.constraint (equalTo: view.bottomAnchor).isActive = true
     }
     
-    private func getStocks(){
-        let session = URLSession(configuration: .default)
-        let urlString = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&per_page=100"
-        guard let url = URL(string: urlString) else {return}
-        
-        let task = session.dataTask(with: url) { data, response, error in
-            if let error = error {
-                print("Error - ", error)
-            }
-            
-            guard let response = response as? HTTPURLResponse else {
-                return
-            }
-            
-            print("Status code - ", response.statusCode)
-            
-            guard let data = data else {
-                return
-            }
-            
-            guard let json = try? JSONDecoder().decode([Stock].self, from: data) else{
-                return
-            }
-        
-            DispatchQueue.main.async{
-                self.stocks = json
-                self.tableView.reloadData()
-            }
-        }
-        
-        task.resume()
+}
+
+extension StocksViewController: StocksViewProtocol {
+    func updateView() {
+        tableView.reloadData()
     }
-
-
+    
+    func updateView(withLoader isLoading: Bool) {
+        print("Loader is - ", isLoading, " at ", Date())
+    }
+    
+    func updateView(withError message: String) {
+        print("Error - ", message)
+    }
 }
 
 extension StocksViewController: UITableViewDataSource, UITableViewDelegate{
     func numberOfSections(in tableView: UITableView) -> Int {
-        return stocks.count
+        return presenter.itemsCount
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -102,17 +97,21 @@ extension StocksViewController: UITableViewDataSource, UITableViewDelegate{
             cell.layer.cornerRadius = 16
         }
         
-        cell.configure(stock: stocks[indexPath.section])
+        cell.configure(stock: presenter.model(for: indexPath))
             
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let network = Network()
+        let service = StocksService(client: network)
+        let vc = DetailedViewController(presenter: StockPresenter(service: service))
+        vc.configure(stock: presenter.model(for: indexPath))
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     
 }
 
-extension NSObject {
-    static var typeName: String {
-        String(describing: self)
-    }
-}
+
 
